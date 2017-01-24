@@ -99,7 +99,7 @@
                      (str "all the follovers of " (get user "username")))))})
 
 (defn -main [& args]
-  (let [usage (format "dribbble <%s> <user> [top-n]" (string/join "|" (keys commands)))
+  (let [usage (format "Usage: <%s> <user> [top-n]" (string/join "|" (keys commands)))
         cmd (commands (first args))
         usr (second args)]
     (if (or (nil? cmd) (nil? usr)) (do (println usage) (System/exit 1)))
