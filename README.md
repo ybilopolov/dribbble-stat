@@ -1,32 +1,25 @@
 # dribbble-stat
 
-FIXME: description
+A tool to calculate Dribbble stats:
 
-## Installation
+For a given Dribbble user find all followers
+For each follower find all shots
+For each shot find all "likers"
+Calculate Top10 "likers"
 
-Download from http://example.com/FIXME.
 
 ## Usage
 
-FIXME: explanation
+Accepts few simple commands as a command-line tool, to see usage run either with lein
+
+    $ lein run
+
+or .jar directly
 
     $ java -jar dribbble-stat-0.1.0-standalone.jar [args]
 
-## Options
+URL matching task also included as a separate namespace: dribbble-stat.url-match
 
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
 
 ## License
 
