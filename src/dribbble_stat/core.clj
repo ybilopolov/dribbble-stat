@@ -22,16 +22,25 @@
     (if (nil? url)
       data
       (let [auth {"access_token" dribbble-oauth}
-            resp (client/get url {:query-params auth})
-            body (json/read-str (:body resp))
-            next-url (get-in resp [:links :next :href])
-            rl-remaining (bigdec (get-in resp [:headers :X-RateLimit-Remaining]))
-            rl-reset (bigdec (get-in resp [:headers :X-RateLimit-Reset]))]
-        (if (and next-url (<= rl-remaining 1))
-          (let [timeout (+ (- (* rl-reset 1000) (System/currentTimeMillis)) 1000)]
-            (println "API rate limit excceded, resuming in" timeout "ms.")
-            (Thread/sleep timeout)))
-        (recur next-url (if (map? body) (merge data body) (concat data body)))))))
+            resp (client/get url {:query-params auth :throw-exceptions false})
+            status (get resp :status)
+            rl-reset (get-in resp [:headers :X-RateLimit-Reset])]
+        (cond
+
+         (= status 200)
+         (let [body (json/read-str (:body resp))
+               next-url (get-in resp [:links :next :href])]
+           (recur next-url (if (map? body) (merge data body) (concat data body))))
+
+         (= status 429)
+         (let [timeout (+ 1000 (- (* 1000 (bigdec rl-reset))
+                                  (System/currentTimeMillis)))]
+           (println "API rate limit excceded, resuming in" timeout "ms.")
+           (Thread/sleep timeout)
+           (recur url data))
+
+         :else
+           (dorun (println "API request error:") (clojure.pprint/pprint resp)))))))
 
 (defn get-user [name-or-id]
   (get-dribbble-data (get-url :user name-or-id)))
